@@ -24,6 +24,9 @@ int sbmem_init (int segsize){
     sharedSize = segSize;
     //indicates shared mem file
     int fd;
+
+    //delete shared memory if exists
+    shm_unlink(sharedMem);
     //create shared memory object
     fd = shm_open(sharedMem, O_CREAT | O_RDWR, 0666);
     if(fd < 0){
