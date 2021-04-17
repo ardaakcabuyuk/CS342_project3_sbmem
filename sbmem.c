@@ -4,6 +4,7 @@
 #include <sys/shm.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <fcntl.h>
 
 //size of shared memory segment
 int sharedSize;
