@@ -5,7 +5,7 @@ typedef struct Pair {
   struct Pair *left = NULL;
   struct Pair *right = NULL;
   int allocated = 0;
-  int fragmentation;
+  int fragmentation = -1;
 } Pair;
 
 typedef struct {

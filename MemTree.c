@@ -56,3 +56,27 @@ struct Pair *findBlock(MemTree *tree, struct Pair *node, int size) {
   else
   	findBlock(node->right, size);
 }
+
+
+
+
+void split(MemTree *tree, struct Pair *node{
+
+    int newSize = node->size / 2;
+    int leftStart = node->start;
+    int rightStart = leftStart + newSize;
+    int leftEnd = leftStart + newSize - 1;
+    int rightEnd = rightStart + newSize - 1;
+
+    node->left = (struct Pair *) malloc(sizeof(struct Pair));
+    node->left->size = newSize;
+    node->left->start = leftStart;
+    node->left->end = leftEnd;
+
+    node->right = (struct Pair *) malloc(sizeof(struct Pair));
+    node->right->size = newSize;
+    node->right->start = rightStart;
+    node->right->end = rightEnd;
+
+
+}
