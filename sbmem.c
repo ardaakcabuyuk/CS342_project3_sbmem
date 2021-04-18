@@ -8,7 +8,10 @@
 
 //size of shared memory segment
 int sharedSize;
-const char * sharedMem = "Shared Segment"
+
+//name of the shared memory
+const char* sharedMem = "Shared Segment"
+
 //void pointer that points to shared memory object
 void *ptrShared;
 
@@ -27,6 +30,7 @@ int sbmem_init (int segsize){
 
     //delete shared memory if exists
     shm_unlink(sharedMem);
+
     //create shared memory object
     fd = shm_open(sharedMem, O_CREAT | O_RDWR, 0666);
     if(fd < 0){
