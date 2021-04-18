@@ -56,7 +56,6 @@ int sbmem_init (int segsize){
 
     //create the tree to trace the buddy algorithm
     tree = createMemTree(sharedSize);
-
 }
 
 
@@ -97,9 +96,29 @@ void *sbmem_alloc(int reqsize) {
   int internal_fragmentation = actualSize - reqsize;
   struct Pair *block;
   int success = 0;
-  findBlock(tree, tree->root, actualSize, &block, &success);
-  if (success) {
 
+  wait(treeSemaphore);
+  findBlock(tree, tree->root, actualSize, &block, &success);
+  signal(treeSemaphore);
+
+  if (success) {
+    block->fragmentation = internal_fragmentation;
+    printf("Allocated:\n");
+    printf("Start: %d\n", block->start);
+    printf("End: %d\n", block->end);
+    printf("internal fragmentation: %d\n", block->fragmentation);
+
+    wait(memSemaphore);
+    int start_address = ptrShared + block->start;
+    printf("Shared Memory Start Address: %d\n", ptrShared);
+    printf("Start Address: %d\n", ptrShared + block->start);
+    signal(memSemaphore);
+
+    return start_address;
+  }
+  else {
+    printf("Cannot allocate.\n");
+    return NULL;
   }
 
 }
