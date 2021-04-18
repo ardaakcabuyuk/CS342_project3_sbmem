@@ -13,7 +13,7 @@ typedef struct {
 } MemTree;
 
 MemTree *createMemTree(int sizeMem);
-void destruct(Pair *root);
+void destruct(struct Pair *root);
 
 struct Pair *findBlock(MemTree *tree, struct Pair *node, int size);
 void split(MemTree *tree, struct Pair *node);
