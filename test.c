@@ -17,6 +17,35 @@ int main() {
   printf("size = %d\n", found->size);
   printf("allocated? = %d\n", found->allocated);
 
+  found->allocated = 0;
+  merge(tree, tree->root);
+
+  findBlock(tree, tree->root, 32, &found);
+  printf("\nstart = %d\n", found->start);
+  printf("end = %d\n", found->end);
+  printf("size = %d\n", found->size);
+  printf("allocated? = %d\n", found->allocated);
+
+  findBlock(tree, tree->root, 2, &found);
+  printf("\nstart = %d\n", found->start);
+  printf("end = %d\n", found->end);
+  printf("size = %d\n", found->size);
+  printf("allocated? = %d\n", found->allocated);
+
+  struct Pair *first2 = found;
+
+  findBlock(tree, tree->root, 2, &found);
+  printf("\nstart = %d\n", found->start);
+  printf("end = %d\n", found->end);
+  printf("size = %d\n", found->size);
+  printf("allocated? = %d\n", found->allocated);
+
+  first2->allocated = 0;
+  merge(tree, tree->root);
+
+  found->allocated = 0;
+  merge(tree, tree->root);
+
   findBlock(tree, tree->root, 64, &found);
   printf("\nstart = %d\n", found->start);
   printf("end = %d\n", found->end);

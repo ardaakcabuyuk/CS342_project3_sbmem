@@ -94,7 +94,7 @@ void split(MemTree *tree, struct Pair *node) {
 void merge(MemTree *tree, struct Pair *node) {
   if (node->left != NULL) {
     merge(tree, node->left);
-    if (node->left->allocated == 0 && node->right->allocated == 0 && (node->left->left == NULL || node->right->left == NULL)) {
+    if (node->left->allocated == 0 && node->right->allocated == 0 && (node->left->left == NULL && node->right->left == NULL)) {
       free(node->left);
       free(node->right);
       node->left = NULL;
