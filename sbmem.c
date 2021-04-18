@@ -20,6 +20,9 @@ void *ptrShared;
 //tree to trace the buddy algorithm
 MemTree *tree;
 
+//indicates shared mem file
+int fd;
+
 // FUNCTIONS USED BY PROGRAMS
 
 /*
@@ -30,9 +33,6 @@ MemTree *tree;
 int sbmem_init (int segsize){
 
     sharedSize = segSize;
-
-    //indicates shared mem file
-    int fd;
 
     //delete shared memory if exists
     shm_unlink(sharedMem);
