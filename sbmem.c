@@ -26,6 +26,10 @@ int fd;
 //semaphore to protect tree and shared memory
 semaphore treeSemaphore = 1;
 semaphore memSemaphore = 1;
+semaphore processSem = 1;
+
+//number of processes using the library
+int numProcess = 0;
 
 // FUNCTIONS USED BY PROGRAMS
 
@@ -83,6 +87,16 @@ void sbmem_remove(){
 */
 int sbmem_open() {
 
+    wait(processSem);
+    if(numProcess >= 10){
+      printf("Library can not be used. There are too many processes\n" );
+      return -1;
+    }
+    numProcess++;
+    //pointer ptrSharred maps the beginning of the shared memory Segment
+    ptrShared = mmap(0,sharedSize,PROT_READ, MAP_SHARED, fd, 0);
+    signal(processSem);
+    return 0;
 }
 
 /*
