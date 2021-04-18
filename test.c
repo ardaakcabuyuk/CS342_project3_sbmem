@@ -1,5 +1,6 @@
 #include "MemTree.c"
 #include <stdio.h>
+#include <math.h>
 
 int main() {
   MemTree *tree = createMemTree(128);

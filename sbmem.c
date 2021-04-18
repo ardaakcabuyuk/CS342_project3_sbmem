@@ -5,6 +5,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <fcntl.h>
+#include <math.h>
+#include "MemTree.c"
 
 //size of shared memory segment
 int sharedSize;
@@ -14,6 +16,9 @@ const char* sharedMem = "Shared Segment"
 
 //void pointer that points to shared memory object
 void *ptrShared;
+
+//tree to trace the buddy algorithm
+MemTree *tree;
 
 // FUNCTIONS USED BY PROGRAMS
 
@@ -25,6 +30,7 @@ void *ptrShared;
 int sbmem_init (int segsize){
 
     sharedSize = segSize;
+
     //indicates shared mem file
     int fd;
 
@@ -43,6 +49,9 @@ int sbmem_init (int segsize){
 
     //arrange the size of shared memory Segment
     ftruncate(fd, segSize);
+
+    //create the tree to trace the buddy algorithm
+    tree = createMemTree(sharedSize);
 
 }
 
@@ -68,7 +77,7 @@ void sbmem_remove(){
 *@return -1 if too many processes are using library
 *@return 0, if process is able to use library
 */
-int sbmem_open(){
+int sbmem_open() {
 
 }
 
@@ -79,7 +88,15 @@ int sbmem_open(){
 *@return pointer to allocated space
 *NULL pointer is there is not enough memory
 */
-void *sbmem_alloc(int reqsize){
+void *sbmem_alloc(int reqsize) {
+  int actualSize = pow(2, (int) ceil(log2(reqsize)));
+  int internal_fragmentation = actualSize - reqsize;
+  struct Pair *block;
+  int success = 0;
+  findBlock(tree, tree->root, actualSize, &block, &success);
+  if (success) {
+
+  }
 
 }
 
@@ -88,7 +105,7 @@ void *sbmem_alloc(int reqsize){
 *@param ptr pointer pointinf the memory space allocated earlier
 *
 */
-void sbmem_free(void *ptr){
+void sbmem_free(void *ptr) {
 
 }
 
@@ -98,6 +115,6 @@ void sbmem_free(void *ptr){
 *
 *
 */
-int sbmem_close(){
+int sbmem_close() {
 
 }

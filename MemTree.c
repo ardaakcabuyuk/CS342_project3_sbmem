@@ -31,7 +31,7 @@ void destruct(struct Pair *node) {
   }
 }
 
-void findBlock(MemTree *tree, struct Pair *node, int size, struct Pair **block) {
+void findBlock(MemTree *tree, struct Pair *node, int size, struct Pair **block, int *success) {
   if (node == tree->root)
     blockFound = 0;
 
@@ -62,6 +62,10 @@ void findBlock(MemTree *tree, struct Pair *node, int size, struct Pair **block) 
       }
     }
   }
+  else {
+    *success = 1;
+  }
+
 }
 
 void split(MemTree *tree, struct Pair *node) {
