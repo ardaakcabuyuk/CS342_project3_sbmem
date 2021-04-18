@@ -57,8 +57,8 @@ void findBlock(MemTree *tree, struct Pair *node, int size, struct Pair **block, 
       }
       else if (size < node->size) {
         //printf("else if");
-      	findBlock(tree, node->left, size, block);
-      	findBlock(tree, node->right, size, block);
+      	findBlock(tree, node->left, size, block, success);
+      	findBlock(tree, node->right, size, block, success);
       }
     }
   }
@@ -107,4 +107,20 @@ void merge(MemTree *tree, struct Pair *node) {
     if (node->right != NULL)
       merge(tree, node->right);
 	}
+}
+
+void deallocate(MemTree *tree, int startAddress) {
+  struct Pair *cur = tree->root;
+  while (cur->left != NULL) {
+    if (startAddress >= cur->start + cur->size / 2) {
+      cur = cur->right;
+    }
+    else {
+      cur = cur->left;
+    }
+  }
+  if (cur->start == startAddress && cur->allocated) {
+    cur->allocated = 0;
+  }
+
 }

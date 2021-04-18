@@ -118,6 +118,7 @@ void *sbmem_alloc(int reqsize) {
   if (success) {
     block->fragmentation = internal_fragmentation;
     printf("Allocated:\n");
+    printf("PID: %d", getpid());
     printf("Start: %d\n", block->start);
     printf("End: %d\n", block->end);
     printf("internal fragmentation: %d\n", block->fragmentation);
@@ -143,7 +144,11 @@ void *sbmem_alloc(int reqsize) {
 *
 */
 void sbmem_free(void *ptr) {
-
+  int treeStart = ptr - sharedMem;
+  wait(treeSemaphore);
+  deallocate(tree, treeStart);
+  merge(tree, tree->root);
+  signal(treeSemaphore);
 }
 
 /*

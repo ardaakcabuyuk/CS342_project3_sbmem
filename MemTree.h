@@ -19,3 +19,4 @@ void findBlock(MemTree *tree, struct Pair *node, int size, struct Pair **block, 
 void split(MemTree *tree, struct Pair *node);
 void delete(MemTree *tree, struct Pair *node);
 void merge(MemTree *tree, struct Pair *node);
+void deallocate(MemTree *tree, int start);
