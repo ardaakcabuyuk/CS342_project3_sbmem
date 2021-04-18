@@ -1,8 +1,9 @@
-#include "ReadyQueue.h"
+#include "MemTree.h"
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+int blockFound = 0;
 
 MemTree *createMemTree(int sizeMem) {
   MemTree *tree = (MemTree *) malloc(sizeof(MemTree));
@@ -12,6 +13,10 @@ MemTree *createMemTree(int sizeMem) {
   rootNode->start = 0;
   rootNode->end = sizeMem - 1;
   rootNode->size = sizeMem;
+  rootNode->left = NULL;
+  rootNode->right = NULL;
+  rootNode->allocated = 0;
+  rootNode->fragmentation = -1;
 
   tree->root = rootNode;
   return tree;
@@ -26,23 +31,40 @@ void destruct(struct Pair *node) {
   }
 }
 
-struct Pair *findBlock(MemTree *tree, struct Pair *node, int size) {
-  if (node->left == NULL && size < node->size) {
-    while (size < node->size) {
-      split(tree, node);
-      node = node->left;
+void findBlock(MemTree *tree, struct Pair *node, int size, struct Pair **block) {
+  if (node == tree->root)
+    blockFound = 0;
+
+  if (!blockFound) {
+    if (node != NULL) {
+      /*printf("\nstart = %d\n", node->start);
+      printf("end = %d\n", node->end);
+      printf("size = %d\n", node->size);
+      printf("allocated? = %d\n", node->allocated);*/
+      if (node->left == NULL && size < node->size && !node->allocated) {
+        while (size < node->size) {
+          split(tree, node);
+          node = node->left;
+        }
+        node->allocated = 1;
+        blockFound = 1;
+        *block = node;
+      }
+      else if (node->left == NULL && size == node->size && !node->allocated) {
+        node->allocated = 1;
+        blockFound = 1;
+      	*block = node;
+      }
+      else if (size < node->size) {
+        //printf("else if");
+      	findBlock(tree, node->left, size, block);
+      	findBlock(tree, node->right, size, block);
+      }
     }
-    return node;
   }
-  else if (size == node->size && !node->allocated)
-  	return node;
-  else if (size < node->size)
-  	findBlock(node->left, size);
-  else
-  	findBlock(node->right, size);
 }
 
-void split(MemTree *tree, struct Pair *node{
+void split(MemTree *tree, struct Pair *node) {
 
     int newSize = node->size / 2;
     int leftStart = node->start;
@@ -54,11 +76,19 @@ void split(MemTree *tree, struct Pair *node{
     node->left->size = newSize;
     node->left->start = leftStart;
     node->left->end = leftEnd;
+    node->left->left = NULL;
+    node->left->right = NULL;
+    node->left->allocated = 0;
+    node->left->fragmentation = -1;
 
     node->right = (struct Pair *) malloc(sizeof(struct Pair));
     node->right->size = newSize;
     node->right->start = rightStart;
     node->right->end = rightEnd;
+    node->right->left = NULL;
+    node->right->right = NULL;
+    node->right->allocated = 0;
+    node->right->fragmentation = -1;
 }
 
 void merge(MemTree *tree, struct Pair *node) {
