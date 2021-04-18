@@ -32,21 +32,6 @@ struct Pair *findBlock(MemTree *tree, struct Pair *node, int size) {
       split(tree, node);
       node = node->left;
     }
-  }
-  else if (size == node->size && !node->allocated)
-  	return node;
-  else if (size < node->size)
-  	findBlock(node->left, size);
-  else
-  	findBlock(node->right, size);
-}
-
-struct Pair *findBlock(MemTree *tree, struct Pair *node, int size) {
-  if (node->left == NULL && size < node->size) {
-    while (size < node->size) {
-      split(tree, node);
-      node = node->left;
-    }
     return node;
   }
   else if (size == node->size && !node->allocated)
@@ -56,9 +41,6 @@ struct Pair *findBlock(MemTree *tree, struct Pair *node, int size) {
   else
   	findBlock(node->right, size);
 }
-
-
-
 
 void split(MemTree *tree, struct Pair *node{
 
@@ -77,6 +59,19 @@ void split(MemTree *tree, struct Pair *node{
     node->right->size = newSize;
     node->right->start = rightStart;
     node->right->end = rightEnd;
+}
 
-
+void merge(MemTree *tree, struct Pair *node) {
+  if (node->left != NULL) {
+    merge(tree, node->left);
+    if (node->left->allocated == 0 && node->right->allocated == 0) {
+      free(node->left);
+      free(node->right);
+      node->left = NULL;
+      node->right = NULL;
+    }
+    else {
+       merge(tree, node->right);
+    }
+	}
 }
