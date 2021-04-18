@@ -40,3 +40,19 @@ struct Pair *findBlock(MemTree *tree, struct Pair *node, int size) {
   else
   	findBlock(node->right, size);
 }
+
+struct Pair *findBlock(MemTree *tree, struct Pair *node, int size) {
+  if (node->left == NULL && size < node->size) {
+    while (size < node->size) {
+      split(tree, node);
+      node = node->left;
+    }
+    return node;
+  }
+  else if (size == node->size && !node->allocated)
+  	return node;
+  else if (size < node->size)
+  	findBlock(node->left, size);
+  else
+  	findBlock(node->right, size);
+}

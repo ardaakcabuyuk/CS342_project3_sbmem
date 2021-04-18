@@ -18,3 +18,4 @@ void destruct(Pair *root);
 struct Pair *findBlock(MemTree *tree, struct Pair *node, int size);
 void split(MemTree *tree, struct Pair *node);
 void delete(MemTree *tree, struct Pair *node);
+void merge(MemTree *tree, struct Pair *node);
