@@ -23,6 +23,10 @@ MemTree *tree;
 //indicates shared mem file
 int fd;
 
+//semaphore to protect tree and shared memory
+semaphore treeSemaphore = 1;
+semaphore memSemaphore = 1;
+
 // FUNCTIONS USED BY PROGRAMS
 
 /*
