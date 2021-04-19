@@ -51,7 +51,7 @@ int sbmem_init (int segsize){
     fd = shm_open(sharedMem, O_CREAT | O_RDWR, 0666);
     if(fd < 0){
       perror("shm_open()");
-      exit(1);
+      return -1;
     }
 
     semaphore = sem_open(NAME_SEM,O_CREAT,0666,1);
@@ -62,11 +62,17 @@ int sbmem_init (int segsize){
     //pointer ptrSharred maps the beginning of the shared memory Segment
     ptrShared = mmap(0,sharedSize,PROT_READ, MAP_SHARED, fd, 0);
 
+    if(ptrShared == MAP_FAILED){
+        perror("mmap err");
+        return -1;
+    }
+
     int *size = (int*) ptrShared;
     size[0] = sharedSize;
 
     //create the tree to trace the buddy algorithm
     tree = createMemTree(sharedSize);
+    return 0;
 
 }
 
@@ -78,7 +84,7 @@ int sbmem_init (int segsize){
 void sbmem_remove(){
 
     //do necessary cleanups here
-
+    sem_destroy(semaphore);
 
     //remove shared memory segment from the memory
     shm_unlink(sharedMem);
