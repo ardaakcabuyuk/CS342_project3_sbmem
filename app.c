@@ -1,6 +1,6 @@
 #include <unistd.h>
 #include <stdlib.h>
-#include "sbmem.h"
+#include "sbmem.c"
 #define ASIZE 256
 
 

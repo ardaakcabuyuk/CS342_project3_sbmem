@@ -1,18 +1,20 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/mman.h>
 #include <sys/shm.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <fcntl.h>
 #include <math.h>
+#include <semaphore.h>
 #include "MemTree.c"
 
 //size of shared memory segment
 int sharedSize;
 
 //name of the shared memory
-const char* sharedMem = "Shared Segment"
+const char* sharedMem = "Shared Segment";
 
 //void pointer that points to shared memory object
 void *ptrShared;
@@ -24,9 +26,10 @@ MemTree *tree;
 int fd;
 
 //semaphore to protect tree and shared memory
-semaphore treeSemaphore = 1;
-semaphore memSemaphore = 1;
-semaphore processSem = 1;
+sem_t treeSemaphore;
+sem_t memSemaphore;
+sem_t processSem;
+
 
 //number of processes using the library
 int numProcess = 0;
@@ -40,7 +43,7 @@ int numProcess = 0;
 */
 int sbmem_init (int segsize){
 
-    sharedSize = segSize;
+    sharedSize = segsize;
 
     //delete shared memory if exists
     shm_unlink(sharedMem);
@@ -56,10 +59,13 @@ int sbmem_init (int segsize){
     ptrShared = mmap(0,sharedSize,PROT_READ, MAP_SHARED, fd, 0);
 
     //arrange the size of shared memory Segment
-    ftruncate(fd, segSize);
+    ftruncate(fd, segsize);
 
     //create the tree to trace the buddy algorithm
     tree = createMemTree(sharedSize);
+    sem_init(&treeSemaphore, 1, 1);
+    sem_init(&memSemaphore, 1, 1);
+    sem_init(&processSem, 1, 1);
 }
 
 
@@ -86,7 +92,7 @@ void sbmem_remove(){
 */
 int sbmem_open() {
 
-    wait(processSem);
+    sem_wait(&processSem);
     if(numProcess >= 10){
       printf("Library can not be used. There are too many processes\n" );
       return -1;
@@ -94,7 +100,7 @@ int sbmem_open() {
     numProcess++;
     //pointer ptrSharred maps the beginning of the shared memory Segment
     ptrShared = mmap(0,sharedSize,PROT_READ, MAP_SHARED, fd, 0);
-    signal(processSem);
+    sem_post(&processSem);
     return 0;
 }
 
@@ -111,9 +117,9 @@ void *sbmem_alloc(int reqsize) {
   struct Pair *block;
   int success = 0;
 
-  wait(treeSemaphore);
+  sem_wait(&treeSemaphore);
   findBlock(tree, tree->root, actualSize, &block, &success);
-  signal(treeSemaphore);
+  sem_post(&treeSemaphore);
 
   if (success) {
     block->fragmentation = internal_fragmentation;
@@ -123,13 +129,13 @@ void *sbmem_alloc(int reqsize) {
     printf("End: %d\n", block->end);
     printf("internal fragmentation: %d\n", block->fragmentation);
 
-    wait(memSemaphore);
-    int start_address = ptrShared + block->start;
-    printf("Shared Memory Start Address: %d\n", ptrShared);
-    printf("Start Address: %d\n", ptrShared + block->start);
-    signal(memSemaphore);
+    sem_wait(&memSemaphore);
+    int start_address = (intptr_t) ptrShared + block->start;
+    printf("Shared Memory Start Address: %ld\n", (intptr_t) ptrShared);
+    printf("Start Address: %ld\n", (intptr_t) ptrShared + block->start);
+    sem_post(&memSemaphore);
 
-    return start_address;
+    return (void *) ((intptr_t) start_address);
   }
   else {
     printf("Cannot allocate.\n");
@@ -144,11 +150,11 @@ void *sbmem_alloc(int reqsize) {
 *
 */
 void sbmem_free(void *ptr) {
-  int treeStart = ptr - sharedMem;
-  wait(treeSemaphore);
+  int treeStart = ptr - (void *) sharedMem;
+  sem_wait(&treeSemaphore);
   deallocate(tree, treeStart);
   merge(tree, tree->root);
-  signal(treeSemaphore);
+  sem_post(&treeSemaphore);
 }
 
 /*
