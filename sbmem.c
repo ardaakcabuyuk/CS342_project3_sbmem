@@ -164,12 +164,12 @@ void *sbmem_alloc(int reqsize) {
     printf("internal fragmentation: %d\n", block->fragmentation);
 
     sem_wait(semaphore);
-    int start_address = (intptr_t) ptrShared + block->start;
+    intptr_t start_address = (intptr_t) ptrShared + block->start;
     printf("Shared Memory Start Address: %ld\n", (intptr_t) ptrShared);
-    printf("Start Address: %ld\n", (intptr_t) ptrShared + block->start);
+    printf("Start Address: %ld\n", start_address);
     sem_post(semaphore);
 
-    return (void *) ((int *) ((intptr_t) start_address));
+    return (void *) start_address;
   }
   else {
     printf("Cannot allocate.\n");

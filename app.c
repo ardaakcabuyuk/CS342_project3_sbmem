@@ -20,8 +20,10 @@ int main(){
     p = sbmem_alloc (ASIZE);
     printf("After sbmem_alloc\n");
     // allocate space to forcharacters
-    for (i = 0; i < ASIZE; ++i)
+    for (i = 0; i < ASIZE; ++i) {
       p[i] = 'a';
+      printf("p[%d] = %c\n", i, p[i]);
+    }
 
     // init all chars to ‘a’
 
