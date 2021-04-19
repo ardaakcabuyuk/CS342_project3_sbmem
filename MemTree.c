@@ -47,12 +47,22 @@ void findBlock(MemTree *tree, struct Pair *node, int size, struct Pair **block, 
           node = node->left;
         }
         node->allocated = 1;
+        printf("\nstart = %d\n", node->start);
+        printf("end = %d\n", node->end);
+        printf("size = %d\n", node->size);
+        printf("allocated? = %d\n", node->allocated);
         blockFound = 1;
+        *success = 1;
         *block = node;
       }
       else if (node->left == NULL && size == node->size && !node->allocated) {
         node->allocated = 1;
         blockFound = 1;
+        *success = 1;
+        printf("\nstart = %d\n", node->start);
+        printf("end = %d\n", node->end);
+        printf("size = %d\n", node->size);
+        printf("allocated? = %d\n", node->allocated);
       	*block = node;
       }
       else if (size < node->size) {
@@ -62,9 +72,7 @@ void findBlock(MemTree *tree, struct Pair *node, int size, struct Pair **block, 
       }
     }
   }
-  else {
-    *success = 1;
-  }
+
 
 }
 

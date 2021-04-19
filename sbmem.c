@@ -44,34 +44,42 @@ int sbmem_init (int segsize){
 
     sharedSize = segsize;
 
+    printf("x0\n" );
     //delete shared memory if exists
     shm_unlink(sharedMem);
-
+    printf("x1\n" );
     //create shared memory object
     fd = shm_open(sharedMem, O_CREAT | O_RDWR, 0666);
+    printf("x2\n" );
     if(fd < 0){
       perror("shm_open()");
       return -1;
     }
-
+    printf("x3\n" );
     semaphore = sem_open(NAME_SEM,O_CREAT,0666,1);
+    printf("x4\n" );
 
     //arrange the size of shared memory Segment
     ftruncate(fd, segsize);
-
+    printf("x5\n" );
     //pointer ptrSharred maps the beginning of the shared memory Segment
-    ptrShared = mmap(0,sharedSize,PROT_READ, MAP_SHARED, fd, 0);
+    ptrShared = mmap(NULL,sharedSize,PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
+    printf("x6\n" );
 
     if(ptrShared == MAP_FAILED){
         perror("mmap err");
         return -1;
     }
-
+    printf("x7\n" );
     int *size = (int*) ptrShared;
+    printf("x8\n" );
     size[0] = sharedSize;
+    printf("x9\n" );
 
     //create the tree to trace the buddy algorithm
+    printf("a0\n" );
     tree = createMemTree(sharedSize);
+    printf("a1\n" );
     return 0;
 
 }
@@ -104,7 +112,7 @@ int sbmem_open() {
       printf("Library can not be used. There are too many processes\n" );
       return -1;
     }
-    semaphore = sem_open(NAME_SEM, O_RDWR);
+    semaphore = sem_open(NAME_SEM, O_CREAT,0660,1);
     int fileDescriptor = shm_open(sharedMem, O_RDWR, 0666);
 
     void *sharedPtr = mmap(NULL, sizeof(int), PROT_READ|PROT_WRITE, MAP_SHARED, fileDescriptor,0);
@@ -133,28 +141,34 @@ int sbmem_open() {
 void *sbmem_alloc(int reqsize) {
   int actualSize = pow(2, (int) ceil(log2(reqsize)));
   int internal_fragmentation = actualSize - reqsize;
+  printf("test0\n" );
   struct Pair *block;
+  printf("test1\n" );
   int success = 0;
 
-  sem_wait(semaphore);
+
+  //sem_wait(semaphore);
+  printf("test2\n" );
   findBlock(tree, tree->root, actualSize, &block, &success);
-  sem_post(semaphore);
+  printf("test3\n" );
+  //sem_post(semaphore);
+  printf("test4\n" );
 
   if (success) {
     block->fragmentation = internal_fragmentation;
     printf("Allocated:\n");
-    printf("PID: %d", getpid());
+    printf("PID: %d\n", getpid());
     printf("Start: %d\n", block->start);
     printf("End: %d\n", block->end);
     printf("internal fragmentation: %d\n", block->fragmentation);
 
-    sem_wait(semaphore);
+    //sem_wait(semaphore);
     int start_address = (intptr_t) ptrShared + block->start;
     printf("Shared Memory Start Address: %ld\n", (intptr_t) ptrShared);
     printf("Start Address: %ld\n", (intptr_t) ptrShared + block->start);
-    sem_post(semaphore);
+    //sem_post(semaphore);
 
-    return (void *) ((intptr_t) start_address);
+    return (void *) ((int *) ((intptr_t) start_address));
   }
   else {
     printf("Cannot allocate.\n");

@@ -6,6 +6,8 @@
 
 int main(){
 
+    //
+    sbmem_init(512);
     int i, ret;
     char *p;
     printf("Before sbmem_open\n");
@@ -23,7 +25,7 @@ int main(){
 
     // init all chars to ‘a’
 
-    printf("Before sbmem_alloc\n");
+    printf("Before sbmem_free\n");
     sbmem_free (p);
     printf("After sbmem_free\n");
     sbmem_close();
