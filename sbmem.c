@@ -12,6 +12,9 @@
 
 #define NAME_SEM "semaphore"
 #define MIN_REQUEST 128
+#define MAX_REQUEST 4096
+#define MIN_MEM 32 * 1024
+#define MAX_MEM 256 * 1024
 
 //name of the shared memory
 const char* sharedMem = "Shared Segment";
@@ -39,7 +42,7 @@ sem_t *semaphore;
 */
 int sbmem_init (int segsize){
 
-  int nodeCount = segsize * 2 - 1;
+  int nodeCount = segsize / MIN_REQUEST * 2 - 1;
   int treeSize = nodeCount * sizeof(struct Pair);
   int memSize = 3 * sizeof(int) + treeSize + segsize;
   //number of processes using the library
