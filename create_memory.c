@@ -11,6 +11,6 @@
 #include "sbmem.c"
 
 int main() {
-  sbmem_init(128);
+  sbmem_init(512);
   return 0;
 }

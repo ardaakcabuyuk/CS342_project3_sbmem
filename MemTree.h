@@ -12,7 +12,7 @@ typedef struct {
   struct Pair *root;
 } MemTree;
 
-MemTree *createMemTree(int sizeMem);
+void createMemTree(struct Pair *root, int sizeMem);
 void destruct(struct Pair *root);
 
 void findBlock(MemTree *tree, struct Pair *node, int size, struct Pair **block, int *success);
