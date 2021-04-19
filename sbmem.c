@@ -56,7 +56,8 @@ int sbmem_init (int segsize){
       return -1;
     }
     printf("x3\n" );
-    semaphore = sem_open(NAME_SEM,O_CREAT,0666,1);
+    semaphore = sem_open(NAME_SEM,O_CREAT | O_EXCL,0666,1);
+    sem_unlink(NAME_SEM);
     printf("x4\n" );
 
     //arrange the size of shared memory Segment
@@ -147,11 +148,11 @@ void *sbmem_alloc(int reqsize) {
   int success = 0;
 
 
-  //sem_wait(semaphore);
+  sem_wait(semaphore);
   printf("test2\n" );
   findBlock(tree, tree->root, actualSize, &block, &success);
   printf("test3\n" );
-  //sem_post(semaphore);
+  sem_post(semaphore);
   printf("test4\n" );
 
   if (success) {
@@ -162,11 +163,11 @@ void *sbmem_alloc(int reqsize) {
     printf("End: %d\n", block->end);
     printf("internal fragmentation: %d\n", block->fragmentation);
 
-    //sem_wait(semaphore);
+    sem_wait(semaphore);
     int start_address = (intptr_t) ptrShared + block->start;
     printf("Shared Memory Start Address: %ld\n", (intptr_t) ptrShared);
     printf("Start Address: %ld\n", (intptr_t) ptrShared + block->start);
-    //sem_post(semaphore);
+    sem_post(semaphore);
 
     return (void *) ((int *) ((intptr_t) start_address));
   }
