@@ -199,8 +199,10 @@ void sbmem_free(void *ptr) {
 */
 int sbmem_close() {
   printf("\nProcess %d out.\n", getpid());
+  sem_wait(semaphore);
   ((int *) tree)[-1] = ((int *) tree)[-1] - 1;
   printf("NUMBER OF PROCESSES = %d\n", ((int *) tree)[-1]);
+  sem_post(semaphore);
   unlink(sharedMem);
   return 1;
 }
