@@ -5,7 +5,6 @@
 
 
 int main(){
-    sbmem_init(512);
     int i, ret;
     char *p;
     int pid = fork();
@@ -99,8 +98,12 @@ int main(){
 
       sbmem_free (p);
     }
-    sbmem_close();
-
     wait(NULL);
+    char *commandArray[2];
+    char *command = "./destroy_memory";
+    commandArray[0] = command;
+    commandArray[1] = NULL;
+    execvp(*commandArray, commandArray);
+    printf("destroy_memory executed.\n");
     return (0);
 }

@@ -11,6 +11,7 @@
 #include "sbmem.c"
 
 int main() {
-  sbmem_init(512);
+  sbmem_init(pow(2, (int) ceil(log2(MIN_MEM + rand() % (MAX_MEM- MIN_MEM + 1)))));
+  while(1);
   return 0;
 }
