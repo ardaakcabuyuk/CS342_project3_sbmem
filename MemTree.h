@@ -6,9 +6,11 @@ typedef struct Pair {
   struct Pair *right;
   int allocated;
   int fragmentation;
+  int depth;
+  int horizontal;
 } Pair;
 
-typedef struct {
+typedef struct MemTree {
   struct Pair *root;
 } MemTree;
 

@@ -13,20 +13,5 @@
 int main() {
   sbmem_remove();
   printf("Memory destroyed.\n");
-  printf("Memory destroyed.\n");
-  printf("Memory destroyed.\n");
-  printf("Memory destroyed.\n");
-  printf("Memory destroyed.\n");
-  printf("Memory destroyed.\n");
-  printf("Memory destroyed.\n");
-  printf("Memory destroyed.\n");
-  printf("Memory destroyed.\n");
-  printf("Memory destroyed.\n");
-  printf("Memory destroyed.\n");printf("Memory destroyed.\n");
-  printf("Memory destroyed.\n");
-  printf("Memory destroyed.\n");
-  printf("Memory destroyed.\n");printf("Memory destroyed.\n");
-  printf("Memory destroyed.\n");
-  printf("Memory destroyed.\n");printf("Memory destroyed.\n");printf("Memory destroyed.\n");printf("Memory destroyed.\n");
   return 0;
 }

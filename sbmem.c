@@ -32,6 +32,9 @@ int fd;
 //semaphore to protect tree and shared memory
 sem_t *semaphore;
 
+//for experiments
+int total_fragmentation = 0;
+
 
 // FUNCTIONS USED BY PROGRAMS
 
@@ -41,6 +44,10 @@ sem_t *semaphore;
 *@return 0 if operation is successful, otherwise, 1
 */
 int sbmem_init (int segsize){
+  if (segsize > MAX_MEM || segsize < MIN_MEM) {
+    printf("Invalid memory size.\n");
+    return -1;
+  }
 
   int nodeCount = segsize / MIN_REQUEST * 2 - 1;
   int treeSize = nodeCount * sizeof(struct Pair);
@@ -82,8 +89,8 @@ int sbmem_init (int segsize){
   sizes[2] = numProcess;
 
   //create the tree to trace the buddy algorithm
-  tree = (MemTree *) (3 * sizeof(int) + (char*) ptrShared);
-  root = (struct Pair *) (3 * sizeof(int) + (char*) ptrShared + sizeof(MemTree));
+  tree = (struct MemTree *) (3 * sizeof(int) + (char*) ptrShared);
+  root = (struct Pair *) (3 * sizeof(int) + (char*) ptrShared + sizeof(struct MemTree));
   tree->root = root;
   createMemTree(root, segsize);
 
@@ -127,8 +134,8 @@ int sbmem_open() {
     void *whole_mem = mmap(NULL, sizeMem, PROT_READ|PROT_WRITE, MAP_SHARED, fileDescriptor,0);
 
     memPtr = (char *) whole_mem + 3 * sizeof(int) + sizeof(MemTree) + ((int *) whole_mem)[1];
-    tree = (MemTree *) (3 * sizeof(int) + (char*) whole_mem);
-    root = (struct Pair *) (3 * sizeof(int) + (char*) whole_mem + sizeof(MemTree));
+    tree = (struct MemTree *) (3 * sizeof(int) + (char*) whole_mem);
+    root = (struct Pair *) (3 * sizeof(int) + (char*) whole_mem + sizeof(struct MemTree));
     tree->root = root;
 
     //char * char_mem = (char*) mem_shared;
@@ -148,8 +155,13 @@ int sbmem_open() {
 *NULL pointer is there is not enough memory
 */
 void *sbmem_alloc(int reqsize) {
+  if (reqsize > MAX_REQUEST || reqsize < MIN_REQUEST) {
+    printf("Invalid request by process %d of size %d.\n", getpid(), reqsize);
+    return NULL;
+  }
   int actualSize = pow(2, (int) ceil(log2(reqsize)));
   int internal_fragmentation = actualSize - reqsize;
+  total_fragmentation += internal_fragmentation;
   struct Pair *block;
   int success = 0;
 
@@ -199,6 +211,7 @@ void sbmem_free(void *ptr) {
 */
 int sbmem_close() {
   printf("\nProcess %d out.\n", getpid());
+  printf("Total internal fragmentation = %d\n", total_fragmentation);
   sem_wait(semaphore);
   ((int *) tree)[-1] = ((int *) tree)[-1] - 1;
   printf("NUMBER OF PROCESSES = %d\n", ((int *) tree)[-1]);
