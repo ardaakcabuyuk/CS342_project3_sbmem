@@ -5,7 +5,7 @@
 #include <sys/types.h>
 #include <sys/time.h>
 #include <sys/wait.h>
-#include "sbmem.c"
+#include "sbmemlib.c"
 #define SETNO 1
 
 void *allocate(int size) {
