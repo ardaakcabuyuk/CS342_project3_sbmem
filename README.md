@@ -3,5 +3,5 @@ Memory management library (buddy memory allocation from shared memory).
 
 Group Members
 -
-* Arda Akça Büyük 21802835
-* Elif Özer 21602495
+* [Arda Akça Büyük](https://github.com/ardaakcabuyuk) - 21802835
+* [Elif Özer](https://github.com/elifozerr) - 21602495
