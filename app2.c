@@ -22,6 +22,7 @@ int main(){
 
           for (int i = 0; i < 10; i++) {
             aSize = MIN_REQUEST + rand() % (MAX_REQUEST - MIN_REQUEST + 1);
+            printf("aSize %d\n", aSize );
             p = sbmem_alloc (aSize);
             if (p != NULL) {
               // allocate space to forcharacters
