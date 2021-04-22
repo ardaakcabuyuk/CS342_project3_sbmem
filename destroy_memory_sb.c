@@ -8,7 +8,7 @@
 #include <fcntl.h>
 #include <math.h>
 #include <semaphore.h>
-#include "sbmem.c"
+#include "sbmem.h"
 
 int main() {
   sbmem_remove();

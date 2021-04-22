@@ -8,7 +8,7 @@
 #include <fcntl.h>
 #include <math.h>
 #include <semaphore.h>
-#include "sbmem.c"
+#include "sbmem.h"
 
 int main() {
   //sbmem_init(pow(2, (int) ceil(log2(MIN_MEM + rand() % (MAX_MEM- MIN_MEM + 1)))));
