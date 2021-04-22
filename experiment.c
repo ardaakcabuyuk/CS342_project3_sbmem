@@ -7,6 +7,7 @@
 #include <sys/wait.h>
 #include "sbmem.c"
 #define SETNO 1
+#define PROCESS_COUNT 32
 
 void *allocate(int size) {
   char *p = sbmem_alloc (size);
@@ -29,8 +30,15 @@ void dealloc(void *p) {
 int main(){
     srand(time(NULL));
     int i, ret, aSize;
+    int fd[2];
+    if (pipe(fd) == -1) {
+      fprintf(stderr,"Pipe failed");
+      return 1;
+    }
+    int overall_fragmentation = 0;
+    write(fd[1], &overall_fragmentation, sizeof(overall_fragmentation));
     char *p;
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < PROCESS_COUNT; i++) {
       int pid = fork();
       if (pid == 0) {
           ret = sbmem_open();
@@ -50,11 +58,17 @@ int main(){
           char *a6 = allocate(256 * SETNO);
           dealloc(a6);
 
-          sbmem_close();
+          int total_fragmentation = sbmem_close();
+          int overall_fragmentation;
+          read(fd[0], &overall_fragmentation, sizeof(overall_fragmentation));
+          overall_fragmentation += total_fragmentation;
+          write(fd[1], &overall_fragmentation, sizeof(overall_fragmentation));
           exit(0);
         }
     }
     while(wait(NULL) > 0);
+    read(fd[0], &overall_fragmentation, sizeof(overall_fragmentation));
+    printf("Overall fragmentation for %d processes = %d bytes.\n", PROCESS_COUNT, overall_fragmentation);
     char *commandArray[2];
     char *command = "./destroy_memory";
     commandArray[0] = command;
