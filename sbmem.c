@@ -218,5 +218,5 @@ int sbmem_close() {
   printf("NUMBER OF PROCESSES = %d\n", ((int *) tree)[-1]);
   sem_post(semaphore);
   unlink(sharedMem);
-  return total_fragmentation;
+  return 1;
 }
