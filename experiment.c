@@ -6,8 +6,8 @@
 #include <sys/time.h>
 #include <sys/wait.h>
 #include "sbmem.c"
-#define SETNO 1
-#define PROCESS_COUNT 32
+#define SETNO 5
+#define PROCESS_COUNT 8
 
 void *allocate(int size) {
   char *p = sbmem_alloc (size);
